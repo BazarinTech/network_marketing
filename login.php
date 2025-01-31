@@ -1,3 +1,26 @@
+<?php 
+     include 'includes/database.php';
+
+     $error = isset($error) ? $error : '';
+
+     session_start();
+
+     if (isset($_POST['login'])) {
+        $uname = $_POST['uname'];
+        $pass = $_POST['pass'];
+
+        //check if account is there
+        $user = $query->select('users', '*', ['username' => $uname, 'passwrd' => $pass]);
+        $num = count($user);
+        if ($num > 0) {
+            $_SESSION['uname'] = $uname;
+            header('Location: index');
+        }else{
+            $error = 'Invalid Credentials!';
+        }
+
+     }
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,7 +32,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>SB Admin 2 - Login</title>
+    <title>QashQue - Login</title>
 
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -41,15 +64,16 @@
                                     <div class="text-center">
                                         <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
                                     </div>
-                                    <form class="user">
+                                    <form class="user" method='post' action='login'>
                                         <div class="form-group">
-                                            <input type="text" class="form-control form-control-user"
+                                            <input type="text" name='uname' class="form-control form-control-user"
                                                 id="exampleInputUsername" aria-describedby="emailHelp"
-                                                placeholder="Enter Username...">
+                                                placeholder="Enter Username..." required>
+                                                <input type="hidden" id="errorMessage" value="<?= $error ?>">
                                         </div>
                                         <div class="form-group">
-                                            <input type="password" class="form-control form-control-user"
-                                                id="exampleInputPassword" placeholder="Password">
+                                            <input type="password" name='pass' class="form-control form-control-user"
+                                                id="exampleInputPassword" placeholder="Password" required>
                                         </div>
                                         <div class="form-group">
                                             <div class="custom-control custom-checkbox small">
@@ -58,23 +82,23 @@
                                                     Me</label>
                                             </div>
                                         </div>
-                                        <a style="background-color: purple;" href="index.html" class="btn btn-primary btn-user text-light btn-block">
+                                        <button style="background-color: purple;" type='submit' name='login' class="btn btn-user text-light btn-block">
                                             Login
-                                        </a>
+                                        </button>
                                         <hr>
-                                        <a href="index.html" class="btn btn-google btn-user btn-block">
+                                        <a href="#" class="btn btn-google btn-user btn-block">
                                             <i class="fab fa-google fa-fw"></i> Login with Google
                                         </a>
-                                        <a href="index.html" class="btn btn-facebook btn-user btn-block">
+                                        <a href="#" class="btn btn-facebook btn-user btn-block">
                                             <i class="fab fa-facebook-f fa-fw"></i> Login with Facebook
                                         </a>
                                     </form>
                                     <hr>
                                     <div class="text-center">
-                                        <a class="small" href="forgot-password.html">Forgot Password?</a>
+                                        <a class="small" href="forgot-password">Forgot Password?</a>
                                     </div>
                                     <div class="text-center">
-                                        <a class="small" href="register.html">Create an Account!</a>
+                                        <a class="small" href="register">Create an Account!</a>
                                     </div>
                                 </div>
                             </div>
@@ -85,7 +109,23 @@
             </div>
 
         </div>
-
+        <!-- Error Modal -->
+        <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Authentication Failed!</h5>
+                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body"><?=$error?></div>
+                    <div class="modal-footer">
+                        <button class="btn btn-danger" type="button" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+        </div>
     </div>
 
     <!-- Bootstrap core JavaScript-->
@@ -97,6 +137,16 @@
 
     <!-- Custom scripts for all pages-->
     <script src="js/sb-admin-2.min.js"></script>
+    
+    <!-- Registration Page script-->
+    <script>
+    $(document).ready(function() {
+        let errorMessage = $("#errorMessage").val();
+        if (errorMessage.trim() !== "") {
+            $("#errorModal").modal('show'); // Show the error modal if there's an error
+            }
+        });
+    </script>
 
 </body>
 

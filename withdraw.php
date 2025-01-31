@@ -1,3 +1,30 @@
+<?php 
+     include 'includes/user.php';
+
+     $error = isset($error) ? $error : '';
+
+     if (isset($_POST['withdraw'])) {
+        $phone = $_POST['phone'];
+        $amount = $_POST['amount'];
+
+        if ($balance >= $amount) {
+            $amount = $amount / $rate;
+            $balance = $balance / $rate;
+            $withdrawals = $withdrawals / $rate;
+
+            if ($amount >= 1.5) {
+                $query->insert('transactions', ['userID' => $userID, 'amount' => $amount, 'transactionRef' => $name, 'account' => $phone, 'type' => 'withdrawal']);
+                $query->update('wallets', ['balance' => $balance - $amount, 'withdrawals' => $withdrawals + $amount], ['username' => $uname]);
+                $error = 'Withdrawal successful!';
+            }else{
+                $error = 'Minimum Withdrawal is '.$currency.' '. number_format($rate * 1.5);
+            }
+
+        }else{
+            $error = 'Insufficient balance';
+        }
+     }
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,7 +36,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>QashCheque - Blogging</title>
+    <title>QashCheque - Withdraw</title>
 
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -26,174 +53,8 @@
 
     <!-- Page Wrapper -->
     <div id="wrapper">
-
         <!-- Sidebar -->
-        <ul style="background-color: purple;" class="navbar-nav sidebar sidebar-dark accordion" id="accordionSidebar">
-
-            <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
-                <div class="sidebar-brand-icon rotate-n-15">
-                    <i class="fas fa-laugh-wink"></i>
-                </div>
-                <div class="sidebar-brand-text mx-3">QashQue</div>
-            </a>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider my-0">
-
-            <!-- Nav Item - Dashboard -->
-            <li class="nav-item active">
-                <a class="nav-link" href="index">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Dashboard</span></a>
-            </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider">
-
-            <!-- Heading -->
-            <div class="sidebar-heading">
-                Funds Management
-            </div>
-
-            <!-- Nav Item - Pages Collapse Menu -->
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
-                    aria-expanded="true" aria-controls="collapseTwo">
-                    <i class="fas fa-money-bill-wave-alt fa-cog"></i>
-                    <span>Payment Process</span>
-                </a>
-                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Payment process:</h6>
-                        <a class="collapse-item" href="withdraw">Withdraw</a>
-                        <a class="collapse-item" href="deposit">Deposit</a>
-                    </div>
-                </div>
-            </li>
-
-            <!-- Nav Item - Utilities Collapse Menu -->
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
-                    aria-expanded="true" aria-controls="collapseUtilities">
-                    <i class="fas fa-receipt "></i>
-                    <span>Transactions Records</span>
-                </a>
-                <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
-                    data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Transactions:</h6>
-                        <a class="collapse-item" href="transaction">Transactions Records</a>
-                        <!-- <a class="collapse-item" href="utilities-animation.html">Animations</a>
-                        <a class="collapse-item" href="utilities-other.html">Other</a> -->
-                    </div>
-                </div>
-            </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider">
-
-            <!-- Heading -->
-            <div class="sidebar-heading">
-                Networking
-            </div>
-
-            <!-- Nav Item - Utilities Collapse Menu -->
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseNetworking"
-                    aria-expanded="true" aria-controls="collapseUtilities">
-                    <i class="fas fa-user "></i>
-                    <span>Referrals</span>
-                </a>
-                <div id="collapseNetworking" class="collapse" aria-labelledby="headingUtilities"
-                    data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Lvels:</h6>
-                        <a class="collapse-item" href="level1">Level 1</a>
-                        <a class="collapse-item" href="level2">Level 2</a>
-                        <a class="collapse-item" href="level3">Level 3</a>
-                        <!-- <a class="collapse-item" href="utilities-animation.html">Animations</a>
-                        <a class="collapse-item" href="utilities-other.html">Other</a> -->
-                    </div>
-                </div>
-            </li>
-            <!-- Nav Item - Activate -->
-            <li class="nav-item">
-                <a class="nav-link" href="activate">
-                    <i class="fas fa-fw fa-chart-area"></i>
-                    <span>Activate Account</span></a>
-            </li>
-            <!-- Divider -->
-            <hr class="sidebar-divider">
-
-            <!-- Heading -->
-            <div class="sidebar-heading">
-                Blogging
-            </div>
-
-            <!-- Nav Item - Blog start -->
-            <li class="nav-item">
-                <a class="nav-link" href="blog">
-                    <i class="fas fa-fw fa-chart-area"></i>
-                    <span>Write Blog</span></a>
-            </li>
-            <!-- Nav Item - Blog start -->
-            <li class="nav-item">
-                <a class="nav-link" href="blog-records">
-                    <i class="fas fa-fw fa-chart-area"></i>
-                    <span>Blogging Records</span></a>
-            </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider d-none d-md-block">
-            <!-- Heading -->
-            <div class="sidebar-heading">
-                Surveys
-            </div>
-
-            <!-- Nav Item - Blog start -->
-            <li class="nav-item">
-                <a class="nav-link" href="survey">
-                    <i class="fas fa-fw fa-chart-area"></i>
-                    <span>Perfom Surveys</span></a>
-            </li>
-            <!-- Nav Item - Blog start -->
-            <li class="nav-item">
-                <a class="nav-link" href="survey-records">
-                    <i class="fas fa-fw fa-chart-area"></i>
-                    <span>Surveys Records</span></a>
-            </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider d-none d-md-block">
-            <!-- Heading -->
-            <div class="sidebar-heading">
-                Gaming
-            </div>
-
-            <!-- Nav Item - Blog start -->
-            <li class="nav-item">
-                <a class="nav-link" href="games">
-                    <i class="fas fa-fw fa-chart-area"></i>
-                    <span>Play Games</span></a>
-            </li>
-            <!-- Nav Item - Blog start -->
-            <li class="nav-item">
-                <a class="nav-link" href="games-record.html">
-                    <i class="fas fa-fw fa-chart-area"></i>
-                    <span>Games Records</span></a>
-            </li>
-            
-            <!-- Divider -->
-            <hr class="sidebar-divider d-none d-md-block">
-
-            <!-- Sidebar Toggler (Sidebar) -->
-            <div class="text-center d-none d-md-inline">
-                <button class="rounded-circle border-0" id="sidebarToggle"></button>
-            </div>
-
-
-        </ul>
+        <?php include 'includes/side-nav.inc.php'; ?>
         <!-- End of Sidebar -->
 
         <!-- Content Wrapper -->
@@ -241,6 +102,7 @@
                                         <input type="text" class="form-control bg-light border-0 small"
                                             placeholder="Search for..." aria-label="Search"
                                             aria-describedby="basic-addon2">
+                                        <input type="hidden" id="errorMessage" value="<?= $error ?>">
                                         <div class="input-group-append">
                                             <button class="btn btn-primary" type="button">
                                                 <i class="fas fa-search fa-sm"></i>
@@ -374,7 +236,7 @@
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">Douglas McGee</span>
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small"><?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?></span>
                                 <img class="img-profile rounded-circle"
                                     src="img/undraw_profile.svg">
                             </a>
@@ -409,8 +271,33 @@
                 <!-- Begin Page Content -->
                 <div class="container-fluid d-flex justify-content-center">
 
-                    <div class="col-lg-6 o-hidden lg my-5">
-                        <p class="h1 text-center">We are working on this feature</p>
+                    <div class="card col-lg-6 o-hidden border-0 shadow-lg my-5">
+                        <div class="card-body p-0">
+                            <!-- Nested Row within Card Body -->
+                                <div class="col-lg-">
+                                    <div class="p-5">
+                                        <div class="text-center">
+                                            <h1 style="font-weight: bold; color: purple;" class="h4 mb-2">Instant Withdrawal</h1>
+                                        </div>
+                                        <div class="">
+                                            <p class="">Minimum withdrawal is <?=$currency?> <?= number_format($rate * 1.5, 2) ?></p>
+                                        </div>
+                                        <form class="user" action='withdraw' method="post">
+                                            <div class="form-group">
+                                                <input type="tel" name='phone' class="form-control form-control-user" id="exampleInputTel"
+                                                    placeholder="Phone Number eg 07..." required>
+                                            </div>
+                                            <div class="form-group">
+                                                <input type="number" name='amount' class="form-control form-control-user" id="exampleInputAmt"
+                                                    placeholder="Amount to Withdraw" required>
+                                            </div>
+                                            <button style="background-color: purple;" type='submit' name='withdraw' class="btn btn-user text-light btn-block">
+                                                Submit
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                        </div>
                     </div>
 
                 </div>
@@ -459,6 +346,23 @@
             </div>
         </div>
     </div>
+     <!-- Error Modal -->
+     <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Withdrawal Failed!</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body"><?=$error?></div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger" type="button" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
 
     <!-- Bootstrap core JavaScript-->
     <script src="vendor/jquery/jquery.min.js"></script>
@@ -469,6 +373,15 @@
 
     <!-- Custom scripts for all pages-->
     <script src="js/sb-admin-2.min.js"></script>
+    <!-- Error Modal script-->
+    <script>
+    $(document).ready(function() {
+        let errorMessage = $("#errorMessage").val();
+        if (errorMessage.trim() !== "") {
+            $("#errorModal").modal('show'); // Show the error modal if there's an error
+            }
+        });
+    </script>
 
 </body>
 
