@@ -65,6 +65,7 @@
                                         <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
                                     </div>
                                     <form class="user" method='post' action='login'>
+      
                                         <div class="form-group">
                                             <input type="text" name='uname' class="form-control form-control-user"
                                                 id="exampleInputUsername" aria-describedby="emailHelp"
